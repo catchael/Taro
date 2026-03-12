@@ -41,7 +41,7 @@ jobs:
       with:
         test-name: Run python v1/main.py --help
         setup-command: ''
-        command: 'python v1/main.py --help'
+        command: 'python3 v1/main.py --help'
         timeout: 10
         max-score: 40
 
