@@ -7,34 +7,37 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.prompt import Prompt, Confirm
 
+
 # 路徑初始化
 root_path = Path(__file__).resolve().parent
 sys.path.append(str(root_path))
 
-try:
-    from core.deck import Deck
-    from core.spreads import SpreadEngine
-    from core.ui import Renderer, console
-    from core.database import HistoryManager
-    from api.llm_client import TarotAI
-except ImportError as e:
-    print(f"❌ 核心模組載入失敗，請確認檔案結構是否正確: {e}")
-    sys.exit(1)
-
-# 載入環境變數 (.env)
 load_dotenv()
 
 # 初始化 Typer
-app = typer.Typer(help="🔮 終端機塔羅占卜工具", add_completion=False)
+app = typer.Typer(help="CLI Tarot Divination Tool", add_completion=False)
 
-# 初始化核心
-try:
-    deck = Deck(os.path.join(root_path, "data", "cards.json"))
-    engine = SpreadEngine(deck)
-    db = HistoryManager(os.path.join(root_path, "database", "history.db"))
-except Exception as e:
-    console.print(f"[bold red]❌ 系統初始化失敗：{e}[/bold red]")
-    sys.exit(1)
+def get_app_components():
+    try:
+        from core.deck import Deck
+        from core.spreads import SpreadEngine
+        from core.ui import Renderer, console
+        from core.database import HistoryManager
+        from api.llm_client import TarotAI
+    except ImportError as e:
+        pass
+    
+    try:
+        deck_path = os.path.join(root_path, "data", "cards.json")
+        db_path = os.path.join(root_path, "database", "history.db")
+        
+        deck = Deck(deck_path)
+        engine = SpreadEngine(deck)
+        db = HistoryManager(db_path)
+        return engine, db
+    except Exception as e:
+        console.print(f"[bold red]❌ 系統初始化失敗：{e}[/bold red]")
+        raise typer.Exit(code=1)
 
 # 工具介紹與用戶須知
 def show_welcome_msg():
@@ -81,13 +84,14 @@ def get_api_key():
 # 指令：占卜
 @app.command()
 def draw(
-    question: str = typer.Argument(..., help="你想問的問題"),
-    type: str = typer.Option("single", "--type", "-t", help="牌陣類型: single 或 three")
+    question: str = typer.Argument(..., help="The question you want to ask"),
+    type: str = typer.Option("single", "--type", "-t", help="Spread type: single or three")
 ):
-    """執行占卜：抽牌、存檔、顯示結果並可選 AI 解析"""
+    """執行占卜功能"""
+    engine, db = get_app_components() # 執行指令時才載入資源
     
     if len(question.strip()) < 2:
-        console.print("[bold red]❌ 錯誤：問題太短了，請提供更具體的問題描述。[/bold red]")
+        console.print("[bold red]❌ 錯誤：問題太短。[/bold red]")
         return
 
     try:
@@ -120,6 +124,7 @@ def draw(
 @app.command()
 def clear():
     """🧹 永久清除所有本地占卜紀錄"""
+    engine, db = get_app_components()
     if Confirm.ask("[bold red]⚠️ 確定要刪除所有歷史紀錄嗎？此動作無法還原！[/bold red]"):
         if db.clear_all():
             console.print("[bold green]✨ 紀錄已清空。[/bold green]")
@@ -128,6 +133,7 @@ def clear():
 @app.command()
 def history(limit: int = typer.Option(5, "--limit", "-l", help="顯示最近幾筆紀錄")):
     """📜 查看過去的占卜紀錄"""
+    _, db = get_app_components()
     records = db.get_recent_history(limit)
     
     if not records:
@@ -160,9 +166,16 @@ def exit():
 # 程式入口回呼
 @app.callback(invoke_without_command=True)
 def main(ctx: typer.Context):
-    """若無指令則顯示工具介紹"""
+    """
+    這是程式入口。
+    當使用者只打 python main.py（沒指令也沒參數）時，才顯示歡迎訊息。
+    當使用者打 --help 時，Typer 會自動處理，不會進入這裡執行歡迎訊息。
+    """
+    # 如果有子指令或是打 --help，ctx.invoked_subcommand 就不會是 None
     if ctx.invoked_subcommand is None:
-        show_welcome_msg()
+        # 二次確認：檢查 sys.argv 裡有沒有 help 相關字眼
+        if not any(h in sys.argv for h in ["--help", "-h"]):
+            show_welcome_msg()
 
 
 if __name__ == "__main__":
