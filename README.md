@@ -1,6 +1,6 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/5PhkpLhw)
 # HW2-Implementation-of-SDD-Specification-Optimization
-
+```markdown
 ├── v1/
 │   ├── sdd_v1.md            ← v1.0 規格文件（必要）
 │   ├── main.py              ← v1.0 主程式（必要）
@@ -29,7 +29,7 @@ tarot-cli/
 ├── database/
 │   └── history.db       # 使用者紀錄
 └── main.py              # CLI 入口
-
+```
 
 ```mermaid
 graph TD
