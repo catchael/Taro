@@ -15,20 +15,22 @@
 └── README.md                ← 完整說明文件（必要
 
 
-tarot-cli/
-├── data/
-│   ├── cards.json       # 完整的 78 張牌義資料
-│   └── ascii_art.py     # 儲存每張牌的 ASCII 圖形
-├── core/
-│   ├── __init__.py
-│   ├── deck.py          # 洗牌、抽牌邏輯
-│   ├── spreads.py       # 牌陣定義 (三牌陣、凱爾特十字等)
-│   └── ui.py           # 負責 Rich 美化渲染
-├── api/
-│   └── llm_client.py    # 串接 AI 解牌接口
-├── database/
-│   └── history.db       # 使用者紀錄
-└── main.py              # CLI 入口
+├── v1/
+│   ├── data/
+│   │   ├── cards.json       # 完整的 78 張牌義資料
+│   │   └── ascii_art.py     # 儲存每張牌的 ASCII 圖形
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── deck.py          # 洗牌、抽牌邏輯
+│   │   ├── spreads.py       # 牌陣定義 (三牌陣、凱爾特十字等)
+│   │   └── ui.py           # 負責 Rich 美化渲染
+│   ├── api/
+│   │   └── llm_client.py    # 串接 AI 解牌接口
+│   ├── database/
+│   │   └── history.db       # 使用者紀錄
+│   └── main.py              # CLI 入口
+└── README.md                ← 完整說明文件（必要
+
 ```
 
 ```mermaid
