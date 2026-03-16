@@ -31,9 +31,8 @@ cd Taro
 python -m venv venv
 # Windows 啟動環境
 .\venv\Scripts\activate
-# Mac/Linux 啟動環境
-source venv/bin/activate
-```
+# Windows CMD 啟動環境
+v1\venv\Scripts\activate.bat```
 
 ## 3. 安裝依賴
 ```bash
