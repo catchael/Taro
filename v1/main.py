@@ -12,21 +12,21 @@ from rich.prompt import Prompt, Confirm
 root_path = Path(__file__).resolve().parent
 sys.path.append(str(root_path))
 
+try:
+    from core.deck import Deck
+    from core.spreads import SpreadEngine
+    from core.ui import Renderer, console
+    from core.database import HistoryManager
+    from api.llm_client import TarotAI
+except ImportError as e:
+    pass
+
 load_dotenv()
 
 # 初始化 Typer
 app = typer.Typer(help="CLI Tarot Divination Tool", add_completion=False)
 
 def get_app_components():
-    try:
-        from core.deck import Deck
-        from core.spreads import SpreadEngine
-        from core.ui import Renderer, console
-        from core.database import HistoryManager
-        from api.llm_client import TarotAI
-    except ImportError as e:
-        pass
-    
     try:
         deck_path = os.path.join(root_path, "data", "cards.json")
         db_path = os.path.join(root_path, "database", "history.db")
